@@ -3,6 +3,7 @@
 > > - [x] base32_encode
 > > - [x] base32_decode
 > > - [x] TOTP
+> > - [] HOTP
 
 ----
 
