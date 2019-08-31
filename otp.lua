@@ -118,7 +118,7 @@ end
 
 function TOTP_MT:calc_token()
     local ngx_time = math.floor(ngx.time() / 30)
-    HMAC_Result_Final = {ngx.hmac_sha1(self.key_decoded, totp_time_calc(ngx_time)):byte(1, -1)}
+    local HMAC_Result_Final = {ngx.hmac_sha1(self.key_decoded, totp_time_calc(ngx_time)):byte(1, -1)}
 
     local HMAC_Offset = band(HMAC_Result_Final[20], 0xF)
 
