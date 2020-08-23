@@ -20,28 +20,28 @@ local Base32_Hash = {
     [89] = 24, [90] = 25,
 }
 
-local function decode_base32(serect_str)
-    local Serect_Token = {serect_str:byte(1, -1)}
-    local Serect_Token_Base32 = {}
+local function decode_base32(secret_str)
+    local Secret_Token = {secret_str:byte(1, -1)}
+    local Secret_Token_Base32 = {}
 
     local n = 0
     local bs = 0
 
-    for i, v in ipairs(Serect_Token) do
+    for i, v in ipairs(Secret_Token) do
         n = lshift(n, 5)
         n = n + Base32_Hash[v]
         bs = (bs + 5) % 8
         if (bs < 5) then
-            Serect_Token_Base32[#Serect_Token_Base32+1] = rshift(band(n, lshift(0xFF, bs)), bs)
+            Secret_Token_Base32[#Secret_Token_Base32+1] = rshift(band(n, lshift(0xFF, bs)), bs)
         end
     end
 
-    return string.char(table.unpack(Serect_Token_Base32))
+    return string.char(table.unpack(Secret_Token_Base32))
 end
 
-local function encode_base32(serect_str)
-    local Serect_Token = {serect_str:byte(1, -1)}
-    local Serect_Token_Base32 = {}
+local function encode_base32(secret_str)
+    local Secret_Token = {secret_str:byte(1, -1)}
+    local Secret_Token_Base32 = {}
     local Tmp_cahr = 0
 
     local c = 0
@@ -49,7 +49,7 @@ local function encode_base32(serect_str)
     local tmp_n = 0
     local bs =0
 
-    for i, v in ipairs(Serect_Token) do
+    for i, v in ipairs(Secret_Token) do
         n = lshift(n, 8)
         n = n + v
         c = c + 8
@@ -58,14 +58,14 @@ local function encode_base32(serect_str)
 
         for j = c - bs - 5, 0, -5 do
             Tmp_cahr = rshift(band(tmp_n, lshift(0x1F, j)), j)
-            Serect_Token_Base32[#Serect_Token_Base32+1] = Base32_Hash[Tmp_cahr]
+            Secret_Token_Base32[#Secret_Token_Base32+1] = Base32_Hash[Tmp_cahr]
         end
 
         c = bs
         n = band(n, rshift(0xFF, 8 - bs))
     end
 
-    return string.char(table.unpack(Serect_Token_Base32))
+    return string.char(table.unpack(Secret_Token_Base32))
 end
 
 local function percent_encode_char(c)
@@ -102,17 +102,17 @@ end
 
 local TOTP_MT = {}
 
-function _M.totp_init(serect_key)
+function _M.totp_init(secret_key)
     local r = {
         type = "totp",
     }
     setmetatable(r, { __index = TOTP_MT, __tostring = TOTP_MT.serialize })
-    r:new_key(serect_key)
+    r:new_key(secret_key)
     return r
 end
 
-function TOTP_MT:new_key(serect_key)
-    self.key = serect_key or totp_new_key()
+function TOTP_MT:new_key(secret_key)
+    self.key = secret_key or totp_new_key()
     self.key_decoded = decode_base32(self.key)
 end
 
